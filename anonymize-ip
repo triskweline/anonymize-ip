@@ -24,8 +24,8 @@
 # 
 # Make sure that `anonymize-ip` is in Apache's path or use an absolute path below:
 #
-#   ErrorLog     "|anonymize-ip /opt/www/mysite/log/error.log"
-#   CustomLog    "|anonymize-ip /opt/www/mysite/log/access.log" combined
+#     ErrorLog     "|anonymize-ip /opt/www/mysite/log/error.log"
+#     CustomLog    "|anonymize-ip /opt/www/mysite/log/access.log" combined
 #
 #
 read input

@@ -4,9 +4,11 @@
 # ==============================
 #
 # This reads a line from STDIN, searches for IPv4 addresses,
-# and replaces the last digit group with "0". It then appends
-# the resulting line to the filename passed as first argument to
-# this script.
+# and replaces the last digit group with "0".
+
+# If the script is passed a path as an argument, the resulting line
+# will be appended to that path. Otherwise, the script will print
+# the anonymized path to STDOUT.
 #
 # Example
 # -------
@@ -28,7 +30,14 @@
 #     CustomLog    "|anonymize-ip /opt/www/mysite/log/access.log" combined
 #
 #
+
+SUB_IPV4="s/(([0-9]{1,3}\\.){3})[0-9]{1,3}/\\10/g"
+
 read input
-anonymized=$(echo $input | /bin/sed -r "s/(([0-9]{1,3}\.){3})[0-9]{1,3}/\\10/g")
-echo $anonymized >> $1
+anonymized=$(echo $input | /bin/sed -r $SUB_IPV4)
+
+if [ -z "$1" ]
+  then echo $anonymized
+  else echo $anonymized >> $1
+fi
 

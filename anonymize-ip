@@ -31,10 +31,12 @@
 #
 #
 
-SUB_IPV4="s/(([0-9]{1,3}\\.){3})[0-9]{1,3}/\\10/g"
+SUB_IPV4="s/\\b(([0-9]{1,3}\\.){3})[0-9]{1,3}\\b/\\10/g"
+SUB_IPV6="s/\\b(([A-Fa-f0-9]{0,4}\\:){3,})[A-Fa-f0-9]{0,4}/X\\2X/g"
+# SUB_IPV6="s/\\b([A-Fa-f0-9]{0,4})(\\:[A-Fa-f0-9]{0,4}){3,}/X\\2X/g"
 
 read input
-anonymized=$(echo $input | /bin/sed -r $SUB_IPV4)
+anonymized=$(echo $input | /bin/sed -r $SUB_IPV4 | /bin/sed -r $SUB_IPV6)
 
 if [ -z "$1" ]
   then echo $anonymized

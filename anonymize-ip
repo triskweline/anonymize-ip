@@ -23,7 +23,7 @@
 #
 # Usage in Apache config
 # ----------------------
-# 
+#
 # Make sure that `anonymize-ip` is in Apache's path or use an absolute path below:
 #
 #     ErrorLog     "|anonymize-ip /opt/www/mysite/log/error.log"
@@ -33,11 +33,29 @@
 
 SUB_IPV4="s/(([0-9]{1,3}\\.){3})[0-9]{1,3}/\\10/g"
 
+function expand_ipv6 {
+    # basically count how many fields between colons we have
+    # and fill those up with zeros to 8. Since compression is
+    # only allowed to happen *once* per IP, this should work.
+    IFS=":" read -a WORDS <<<"$1"
+    WORDS_GIVEN=$(echo "${WORDS[@]}"|wc -w)
+    WORDS_MISSING=$(bc <<<8-$WORDS_GIVEN)
+    ZEROS=$(for ((i=1; i<=$WORDS_MISSING; i++)); do echo -n '0000:'; done)
+    echo "$1"|sed -e "s/::/:${ZEROS}/"
+}
+
 read input
-anonymized=$(echo $input | /bin/sed -r $SUB_IPV4)
+
+if (echo "$input"|grep -q ":");
+then  # ipv6
+    IPV6=$(expand_ipv6 "$input")
+    anonymized=$(echo "$IPV6"|cut -d':' -f1-4)::
+else  # ipv4
+    anonymized=$(echo "$input" | /bin/sed -r "$SUB_IPV4")
+fi
 
 if [ -z "$1" ]
-  then echo $anonymized
-  else echo $anonymized >> $1
+  then echo "$anonymized"
+  else echo "$anonymized" >> $1
 fi
 

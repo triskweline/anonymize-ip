@@ -33,11 +33,13 @@
 
 SUB_IPV4="s/(([0-9]{1,3}\\.){3})[0-9]{1,3}/\\10/g"
 
-read input
-anonymized=$(echo $input | /bin/sed -r $SUB_IPV4)
+while read input
+do
+  anonymized=$(echo $input | /bin/sed -r $SUB_IPV4)
 
-if [ -z "$1" ]
-  then echo $anonymized
-  else echo $anonymized >> $1
-fi
+  if [ -z "$1" ]
+    then echo $anonymized
+    else echo $anonymized >> $1
+  fi
+done
 
